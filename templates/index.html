@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Book Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('https://rare-gallery.com/thumbnail/31284-Room-Bookshelf-BookLibrary-HD-Wallpaper.jpg');             
+            background-size: cover; 
+            background-position: center; 
+            margin: 0;
+            padding: 20px;
+            color: #060606; 
+        }
+        h1, h2 {
+            text-align: center;
+            background-color: #060606d2;
+            color: #fcf7f7; 
+        }
+        .form-container {
+            max-width: 400px;
+            margin: 20px auto;
+            background: rgba(255, 255, 255, 0.9); 
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            display: none; 
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        nav {
+            font: 1em sans-serif;
+            width: calc(100% - 10px);
+            padding: 5px;
+            background-color: #ffea02;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            text-transform: uppercase;
+            block-size: 100%;
+            background-color: #007bff30;
+            color: rgb(7, 7, 7);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #2003fc94;
+        }
+        #results {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9); 
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            display: none; 
+        }
+    </style>
+</head>
+<body>
+    <h1>HR Book Library</h1>
+
+    <nav style="text-align: center; margin-bottom: 20px;">
+        <button onclick="showSection('createUser')"><b>Create User</b></button>
+        <button onclick="showSection('getRecommendations')"><b>Get Recommendations</b></button>
+    </nav>
+
+    <div id="createUser" class="form-container">
+        <h2>Create User</h2>
+        <label for="new_user_id">Enter New User ID:</label>
+        <input type="text" id="new_user_id" name="new_user_id" required placeholder="e.g. user123">
+        <label for="preferences">Enter Your Preferred Genre:</label>
+        <input type="text" id="preferences" name="preferences" required placeholder="e.g. Fiction, Non-Fiction">
+        <button id="create-user"><b>Create User</b></button>
+    </div>
+    <div id="getRecommendations" class="form-container">
+        <h2>Get Recommendations</h2>
+        <label for="user_id">Enter User ID:</label>
+        <input type="text" id="user_id" name="user_id" required placeholder="e.g. user123">
+        <button id="get-recommendations"><b>Get Recommendations</b></button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const users = JSON.parse(localStorage.getItem('users')) || {};
+        function saveUserData() {
+            localStorage.setItem('users', JSON.stringify(users));
+        }; 
+        function showSection(section) {
+            document.querySelectorAll('.form-container').forEach(container => {
+                container.style.display = 'none';
+            });
+            document.getElementById(section).style.display = 'block';
+            document.getElementById('results').style.display = 'none'; 
+        }
+        showSection('createUser');
+        
+        document.getElementById('create-user').onclick = function() {
+            const newUserId = document.getElementById('new_user_id').value;
+            const preferences = document.getElementById('preferences').value.split(',').map(genre => genre.trim());
+
+            if (!newUserId || !preferences.length) {
+                alert('Please enter a valid user ID and at least one genre preference.');
+                return;
+            }
+            users[newUserId] = {
+                preferences: preferences,
+                recommendations: [] 
+            };
+
+            alert(`User ${newUserId} created with preferences: ${preferences.join(', ')}`);
+            document.getElementById('new_user_id').value = ''; 
+            document.getElementById('preferences').value = ''; 
+        };
+        
+        document.getElementById('get-recommendations').onclick = function() {
+            const userId = document.getElementById('user_id').value;
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerText = "Fetching recommendations...";
+            resultsDiv.style.display = "block";
+
+            if (!users[userId]) {
+                resultsDiv.innerText = "User not found. Please create a user first.";
+                return;
+            }
+            const userPreferences = users[userId].preferences;
+            const recommendations = userPreferences.map(genre => `${genre} Book 1, ${genre} Book 2`); 
+            resultsDiv.innerText = `Recommended Books for ${userId}: ${recommendations.join(', ')}`;
+        };
+    </script>
+</body>
+</html>
